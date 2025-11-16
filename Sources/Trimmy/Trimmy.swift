@@ -268,7 +268,7 @@ struct MenuContentView: View {
     }
 
     private var settingsSummary: String {
-        "Aggressiveness: \(settings.aggressiveness.titleShort); Blank lines: \(settings.preserveBlankLines ? "kept" : "removed"); \(lastText)"
+        lastText
     }
 }
 
