@@ -304,17 +304,21 @@ struct MenuContentView: View {
         NSApp.activate(ignoringOtherApps: true)
 
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–"
-        let credits = NSAttributedString(
-            string: "Peter Steinberger — MIT License\nhttps://github.com/steipete/Trimmy",
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
+        let versionString = build.isEmpty ? version : "\(version) (\(build))"
+        let credits = NSMutableAttributedString(string: "Peter Steinberger — MIT License\n")
+        let link = NSAttributedString(
+            string: "https://github.com/steipete/Trimmy",
             attributes: [
+                .link: URL(string: "https://github.com/steipete/Trimmy") as Any,
                 .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize),
-                .foregroundColor: NSColor.secondaryLabelColor,
             ])
+        credits.append(link)
 
         let options: [NSApplication.AboutPanelOptionKey: Any] = [
             .applicationName: "Trimmy",
-            .applicationVersion: version,
-            .version: version,
+            .applicationVersion: versionString,
+            .version: versionString,
             .credits: credits,
             .applicationIcon: (NSApplication.shared.applicationIconImage ?? NSImage()) as Any,
         ]
