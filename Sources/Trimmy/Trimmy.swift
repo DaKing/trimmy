@@ -284,17 +284,12 @@ struct MenuContentView: View {
 
     private func showAbout() {
         NSApp.activate(ignoringOtherApps: true)
-        let alert = NSAlert()
-        alert.messageText = "About Trimmy"
-        alert.informativeText = """
-        Trimmy — menu bar clipboard flattener
-        License: MIT
-        Author: Peter Steinberger
-        GitHub: https://github.com/steipete/Trimmy
-        """
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: "OK")
-        alert.runModal()
+        let options: [NSApplication.AboutPanelOptionKey: Any] = [
+            .applicationName: "Trimmy",
+            .version: "0.1.1",
+            .credits: "MIT License\nAuthor: Peter Steinberger\nGitHub: https://github.com/steipete/Trimmy",
+        ]
+        NSApplication.shared.orderFrontStandardAboutPanel(options: options)
     }
 }
 
