@@ -1,6 +1,6 @@
-# Release process (CodexBar)
+# Release process (Trimmy)
 
-This repo is pure SwiftPM; we package/sign/notarize manually (no Xcode project). Sparkle + menu bar specifics included.
+SwiftPM only; manual package/sign/notarize. Sparkle feed served from GitHub Releases.
 
 ## Prereqs
 - Xcode 26+ installed at `/Applications/Xcode.app` (for ictool/iconutil and SDKs).
@@ -8,11 +8,12 @@ This repo is pure SwiftPM; we package/sign/notarize manually (no Xcode project).
 - ASC API creds in env: `APP_STORE_CONNECT_API_KEY_P8`, `APP_STORE_CONNECT_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`.
 - Sparkle keys: public key already in Info.plist; private key path set via `SPARKLE_PRIVATE_KEY_FILE` when generating appcast.
 
-## Icon (glass .icon → .icns)
+## Icon
+If the .icon changes:
 ```
-./Scripts/build_icon.sh Icon.icon CodexBar
+./Scripts/build_icon.sh Icon.icon Trimmy
 ```
-Uses Xcode’s `ictool` + transparent padding + iconset → Icon.icns.
+Uses ictool/iconutil to produce Icon.icns.
 
 ## Build, sign, notarize (arm64)
 ```
@@ -20,28 +21,29 @@ Uses Xcode’s `ictool` + transparent padding + iconset → Icon.icns.
 ```
 What it does:
 - `swift build -c release --arch arm64`
-- Packages `CodexBar.app` with Info.plist and Icon.icns
+- Packages `Trimmy.app` with Info.plist and Icon.icns
 - Embeds Sparkle.framework, Updater, Autoupdate, XPCs
 - Codesigns **everything** with runtime + timestamp (deep) and adds rpath
-- Zips to `CodexBar-0.1.0.zip`
+- Zips to `Trimmy-<version>.zip`
 - Submits to notarytool, waits, staples, validates
 
 Gotchas fixed:
 - Sparkle needs signing for framework, Autoupdate, Updater, XPCs (Downloader/Installer) or notarization fails.
 - Use `--timestamp` and `--deep` when signing the app to avoid invalid signature errors.
+- Avoid `unzip` when installing locally; prefer `ditto -x -k Trimmy-<ver>.zip /Applications` to prevent AppleDouble `._*` files that can break the signature.
 
 ## Appcast (Sparkle)
 After notarization:
 ```
 SPARKLE_PRIVATE_KEY_FILE=/path/to/ed25519-priv.key \
-./Scripts/make_appcast.sh CodexBar-0.1.0.zip \
-  https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml
+./Scripts/make_appcast.sh Trimmy-<ver>.zip \
+  https://raw.githubusercontent.com/steipete/Trimmy/main/appcast.xml
 ```
 Uploads not handled automatically—commit/publish appcast + zip to the feed location (GitHub Releases/raw URL).
 
 ## Tag & release
 ```
-git tag v0.1.1
+git tag v0.2.2
 ./Scripts/make_appcast.sh ...
 # upload zip + appcast to Releases
 # then create GitHub release (gh release create v0.1.1 ...)
@@ -56,6 +58,6 @@ git tag v0.1.1
 - [ ] Upload zip + appcast to feed, publish release/tag
 
 ## Troubleshooting
-- **White plate icon**: regenerate icns via `build_icon.sh` (ictool) to ensure transparent padding.
-- **Notarization invalid**: verify deep+timestamp signing, especially Sparkle’s Autoupdate/Updater and XPCs; rerun package + sign-and-notarize.
-- **App won’t launch**: ensure Sparkle.framework is embedded under `Contents/Frameworks` and rpath added; codesign deep.
+- **Notarization invalid / app “damaged”**: repackage/sign with script; when installing locally use `ditto` to avoid `._*` files; verify with `spctl -a -t exec -vv Trimmy.app` and `stapler validate`.
+- **Feed not updating**: ensure GitHub release asset URL in appcast matches the published version and is reachable (no 404).
+- **About links missing**: confirm credits string construction in `Trimmy.swift` shows the inline links.
