@@ -284,12 +284,7 @@ struct MenuContentView: View {
 
     private func showAbout() {
         NSApp.activate(ignoringOtherApps: true)
-        let options: [NSApplication.AboutPanelOptionKey: Any] = [
-            .applicationName: "Trimmy",
-            .version: "0.1.1",
-            .credits: "MIT License\nAuthor: Peter Steinberger\nGitHub: https://github.com/steipete/Trimmy",
-        ]
-        NSApplication.shared.orderFrontStandardAboutPanel(options: options)
+        NSApplication.shared.orderFrontStandardAboutPanel(nil)
     }
 }
 

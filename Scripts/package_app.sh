@@ -24,6 +24,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
     <key>LSMinimumSystemVersion</key><string>15.0</string>
     <key>LSUIElement</key><true/>
     <key>CFBundleIconFile</key><string>Icon</string>
+    <key>NSHumanReadableCopyright</key><string>© 2025 Peter Steinberger. MIT License.</string>
 </dict>
 </plist>
 PLIST
