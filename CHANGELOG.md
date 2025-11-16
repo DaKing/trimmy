@@ -4,6 +4,7 @@
 
 ## 0.1.3 — 2025-11-16
 - Launch-at-login toggle (SMAppService) with persisted setting.
+- Sparkle auto-updates (Check for Updates…, auto-check toggle, feed to GitHub Releases).
 - Swift Testing migration; lint/format configs added; strict concurrency opt-in.
 - Removed legacy XCTest suite; kept core detector tests.
 

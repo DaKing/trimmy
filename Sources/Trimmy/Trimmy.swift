@@ -1,6 +1,7 @@
 import AppKit
 import Combine
 import ServiceManagement
+import Sparkle
 import SwiftUI
 
 // MARK: - Settings
@@ -251,6 +252,7 @@ extension Aggressiveness {
 struct MenuContentView: View {
     @ObservedObject var monitor: ClipboardMonitor
     @ObservedObject var settings: AppSettings
+    let updater: SPUStandardUpdaterController
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -274,6 +276,10 @@ struct MenuContentView: View {
             Toggle("Launch at login", isOn: self.$settings.launchAtLogin)
             Button("Trim Clipboard Now") {
                 self.monitor.trimClipboardIfNeeded(force: true)
+            }
+            Toggle("Automatically check for updates", isOn: self.autoUpdateBinding)
+            Button("Check for Updates…") {
+                self.updater.checkForUpdates(nil)
             }
             Button("About Trimmy") {
                 self.showAbout()
@@ -315,6 +321,12 @@ struct MenuContentView: View {
 
         NSApplication.shared.orderFrontStandardAboutPanel(options: options)
     }
+
+    private var autoUpdateBinding: Binding<Bool> {
+        Binding(
+            get: { self.updater.updater.automaticallyChecksForUpdates },
+            set: { self.updater.updater.automaticallyChecksForUpdates = $0 })
+    }
 }
 
 // MARK: - App
@@ -322,6 +334,7 @@ struct MenuContentView: View {
 @main
 @MainActor
 struct TrimmyApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var settings = AppSettings()
     @StateObject private var monitor: ClipboardMonitor
 
@@ -335,7 +348,7 @@ struct TrimmyApp: App {
 
     var body: some Scene {
         MenuBarExtra("Trimmy", systemImage: "scissors") {
-            MenuContentView(monitor: self.monitor, settings: self.settings)
+            MenuContentView(monitor: self.monitor, settings: self.settings, updater: self.appDelegate.updaterController)
             Divider()
             Button("Quit") { NSApplication.shared.terminate(nil) }
         }
@@ -348,6 +361,13 @@ struct TrimmyApp: App {
     func applicationDidFinishLaunching(_ notification: Notification) {
         self.monitor.start()
     }
+}
+
+final class AppDelegate: NSObject, NSApplicationDelegate {
+    let updaterController = SPUStandardUpdaterController(
+        startingUpdater: true,
+        updaterDelegate: nil,
+        userDriverDelegate: nil)
 }
 
 enum LaunchAtLoginManager {

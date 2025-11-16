@@ -8,11 +8,15 @@ let package = Package(
     platforms: [
         .macOS(.v15),
     ],
+    dependencies: [
+        .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.8.1"),
+    ],
     targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
         .executableTarget(
             name: "Trimmy",
+            dependencies: [
+                .product(name: "Sparkle", package: "Sparkle"),
+            ],
             swiftSettings: [
                 .enableUpcomingFeature("StrictConcurrency"),
             ]),
