@@ -5,6 +5,7 @@
 - Expanded box-drawing test coverage and ensured command flattening still works after cleaning.
 - Refactor into modular files (settings, detector, monitor, UI/app) and enable SwiftLint on Sources/Tests.
 - Patch version bump to 0.2.3 (7).
+- Thanks to @Blueemi for contributing the box-drawing cleaning option.
 
 ## 0.2.2 — 2025-11-16
 - About panel now lists GitHub · Website · Twitter · Email links inline (matches CodexBar).
