@@ -10,7 +10,6 @@
 
 ## 0.2.2 — 2025-11-16
 - About panel now lists GitHub · Website · Twitter · Email links inline (matches CodexBar).
-- Expanded detector test coverage across aggressiveness levels and edge cases (blank lines, backslashes, prose).
 
 ## 0.2.1 — 2025-11-16
 - Moved the last-trim preview to sit directly beneath “Trim Clipboard Now” for a faster read.
@@ -25,8 +24,7 @@
 ## 0.1.3 — 2025-11-16
 - Launch-at-login toggle (SMAppService) with persisted setting.
 - Sparkle auto-updates (Check for Updates…, auto-check toggle, feed to GitHub Releases).
-- Swift Testing migration; lint/format configs added; strict concurrency opt-in.
-- Removed legacy XCTest suite; kept core detector tests.
+- Lint/format configs aligned; strict concurrency opt-in.
 
 ## 0.1.2 — 2025-11-16
 - Fix About panel credits: use attributed credits with version and icon so the About menu reliably appears.
