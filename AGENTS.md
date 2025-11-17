@@ -4,3 +4,4 @@
 - SwiftFormat is configured for Swift sources only; don't run it on plist/sh scripts.
 - Before any release work, read `docs/release.md` and ensure the CHANGELOG is in reverse-chronological order (newest version at top, bullets ordered by user-facing impact).
 - When publishing a GitHub release, make sure release notes keep Markdown list formatting (no literal `\n` joins); paste the changelog bullets cleanly.
+- After publishing a release, open the GitHub release page and verify the notes render correctly (no stray `\n`, no duplicated/merged lines); edit the release if needed.
