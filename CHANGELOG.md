@@ -2,8 +2,6 @@
 
 ## 0.2.3 — 2025-11-17
 - Optional stripping of box-drawing separators (│ │) with whitespace collapse so prompt-style borders paste cleanly.
-- Expanded box-drawing test coverage and ensured command flattening still works after cleaning.
-- Refactor into modular files (settings, detector, monitor, UI/app) and enable SwiftLint on Sources/Tests.
 - Thanks to @Blueemi for contributing the box-drawing cleaning option.
 
 ## 0.2.2 — 2025-11-16
