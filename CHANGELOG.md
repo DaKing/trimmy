@@ -2,6 +2,7 @@
 
 ## 0.2.4 — 2025-11-17
 - Added optional stripping of box-drawing separators (│ │) and collapse the leftover spaces so clipped prompts paste cleanly.
+- Expanded box-drawing test coverage and ensured command flattening still works after cleaning.
 
 ## 0.2.3 — 2025-11-17
 - Refactor into modular files (settings, detector, monitor, UI/app) and enable SwiftLint on Sources/Tests.

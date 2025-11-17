@@ -13,8 +13,7 @@ struct CommandDetector {
         let collapsed = cleaned.replacingOccurrences(
             of: #" {2,}"#,
             with: " ",
-            options: .regularExpression
-        )
+            options: .regularExpression)
         let trimmed = collapsed.trimmingCharacters(in: .whitespacesAndNewlines)
         return trimmed == text ? nil : trimmed
     }

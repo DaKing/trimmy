@@ -199,4 +199,42 @@ struct TrimmyTests {
         let text = "│ │ echo   │ │    hi │ │"
         #expect(detector.cleanBoxDrawingCharacters(text) == "echo hi")
     }
+
+    @Test
+    func boxDrawingRemovalIsNoOpWhenDisabled() {
+        let settings = AppSettings()
+        settings.removeBoxDrawing = false
+        let detector = CommandDetector(settings: settings)
+        let text = "│ │ echo   hi │ │"
+        #expect(detector.cleanBoxDrawingCharacters(text) == nil)
+    }
+
+    @Test
+    func boxDrawingRemovalStillAllowsCommandFlattening() {
+        let settings = AppSettings()
+        settings.removeBoxDrawing = true
+        settings.aggressiveness = .high
+        let detector = CommandDetector(settings: settings)
+        // Simulate a multi-line prompt wrapped with box characters.
+        let text = """
+        │ │ kubectl \\
+        │ │   get pods
+        """
+        let cleaned = detector.cleanBoxDrawingCharacters(text)
+        #expect(cleaned?.contains("kubectl \\") == true)
+        // After cleaning, it should also flatten as a command.
+        #expect(detector.transformIfCommand(cleaned ?? "") == "kubectl get pods")
+    }
+
+    @Test
+    func boxDrawingRemovalDoesNotStripLegitPipes() {
+        let settings = AppSettings()
+        settings.removeBoxDrawing = true
+        let detector = CommandDetector(settings: settings)
+        let text = "echo 1 | wc -l"
+        // No box characters present; return nil and leave single pipe untouched.
+        #expect(detector.cleanBoxDrawingCharacters(text) == nil)
+        // Single-line input should not be flattened; ensure it remains untouched.
+        #expect(detector.transformIfCommand(text) == nil)
+    }
 }
