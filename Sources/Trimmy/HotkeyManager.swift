@@ -151,10 +151,10 @@ final class HotkeyManager: ObservableObject {
 
     private static func previewSnippet(for text: String) -> String {
         let lines = text.split(whereSeparator: { $0.isNewline }).map(String.init)
-        let snippetLines = lines.prefix(5)
+        let snippetLines = lines.prefix(1000)
         var snippet = snippetLines.joined(separator: "\n")
-        if snippet.count > 400 {
-            snippet = String(snippet.prefix(400)) + "…"
+        if snippet.count > 50000 {
+            snippet = String(snippet.prefix(50000)) + "…"
         }
         if snippet.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return "(preview is empty)"
