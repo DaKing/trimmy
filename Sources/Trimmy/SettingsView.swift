@@ -208,6 +208,7 @@ struct AboutPane: View {
 
             if let updater {
                 Divider()
+                    .padding(.vertical, 8)
                 if updater.isAvailable {
                     VStack(spacing: 10) {
                         Toggle("Check for updates automatically", isOn: self.$autoCheckEnabled)
