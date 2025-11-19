@@ -108,8 +108,8 @@ struct GeneralSettingsPane: View {
                 .padding(.vertical, 4)
 
             PreferenceToggleRow(
-                title: "Launch at login",
-                subtitle: nil,
+                title: "Start at Login",
+                subtitle: "Automatically opens the app when you start your Mac.",
                 binding: self.$settings.launchAtLogin)
                 .padding(.top, 8)
         }
