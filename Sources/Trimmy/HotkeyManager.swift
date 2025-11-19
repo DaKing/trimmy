@@ -76,20 +76,26 @@ final class HotkeyManager: ObservableObject {
             return false
         }
 
-        let lineCount = rawClipboard.split(whereSeparator: { $0.isNewline }).count
+        let textToType = self.monitor.trimmedClipboardText(force: true) ?? rawClipboard
+
+        let lineCount = textToType.split(whereSeparator: { $0.isNewline }).count
         if lineCount > 20 {
-            let proceed = self.confirmLargePaste(lineCount: lineCount)
+            let proceed = self.confirmLargePaste(lineCount: lineCount, preview: textToType)
             if !proceed { return false }
         }
 
-        let textToType = self.monitor.trimmedClipboardText(force: true) ?? rawClipboard
         return self.sender.type(text: textToType)
     }
 
-    private func confirmLargePaste(lineCount: Int) -> Bool {
+    private func confirmLargePaste(lineCount: Int, preview: String) -> Bool {
         let alert = NSAlert()
         alert.messageText = "Type \(lineCount) lines?"
-        alert.informativeText = "You’re about to type \(lineCount) lines. Continue?"
+        alert.informativeText = """
+        You’re about to type \(lineCount) lines. Continue?
+
+        Preview:
+        \(Self.previewSnippet(for: preview))
+        """
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Type All")
         alert.addButton(withTitle: "Cancel")
@@ -116,5 +122,15 @@ final class HotkeyManager: ObservableObject {
         {
             NSWorkspace.shared.open(url)
         }
+    }
+
+    private static func previewSnippet(for text: String) -> String {
+        let lines = text.split(whereSeparator: { $0.isNewline }).map(String.init)
+        let snippetLines = lines.prefix(3)
+        var snippet = snippetLines.joined(separator: "\n")
+        if snippet.count > 200 {
+            snippet = String(snippet.prefix(200)) + "…"
+        }
+        return snippet
     }
 }
