@@ -501,7 +501,7 @@ ls -la \\
         case .normal:
             AggressivenessExample(
                 title: "Normal flattens typical blog commands",
-                caption: "Perfect for README/Stack Overflow snippets with pipes or continuations.",
+                caption: "Perfect for README/blog snippets with pipes or continuations.",
                 sample: """
 kubectl get pods \\
   -n kube-system \\
