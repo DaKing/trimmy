@@ -11,7 +11,6 @@
 - Menu bar icon dims automatically when Auto-Trim is disabled so it’s obvious the service is paused.
 - Manual “Trim Clipboard” and its global shortcut now always run at High aggressiveness, while auto-trim honors the configured level; both shortcuts are fully configurable.
 - Hotkeys pane shows the actual shortcut glyphs, adds a quick Auto-Trim toggle in the menu, and includes an Accessibility banner with one-click prompts to grant Input Monitoring.
-- Quit button moved to the General tab (mirrors CodexBar) and About divider spacing + copy tweaks bring the UI closer to macOS conventions.
 
 ## 0.2.4 — 2025-11-17
 - Last trim preview now middle-truncates long text so the menu stays compact while showing both start and end of the command.
