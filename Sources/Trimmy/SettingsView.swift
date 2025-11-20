@@ -4,6 +4,7 @@ import SwiftUI
 struct SettingsView: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject var hotkeyManager: HotkeyManager
+    @ObservedObject var monitor: ClipboardMonitor
     weak var updater: UpdaterProviding?
     @State private var selectedTab: SettingsTab = .general
 
@@ -20,6 +21,12 @@ struct SettingsView: View {
             HotkeySettingsPane(settings: self.settings, hotkeyManager: self.hotkeyManager)
                 .tabItem { Label("Shortcuts", systemImage: "command") }
                 .tag(SettingsTab.shortcuts)
+
+            #if DEBUG
+            DebugSettingsPane(settings: self.settings, monitor: self.monitor)
+                .tabItem { Label("Debug", systemImage: "ant.fill") }
+                .tag(SettingsTab.debug)
+            #endif
 
             AboutPane(updater: self.updater)
                 .tabItem { Label("About", systemImage: "info.circle") }
@@ -51,6 +58,9 @@ struct SettingsView: View {
 
 enum SettingsTab: String, Hashable, CaseIterable, Codable {
     case general, aggressiveness, shortcuts, about
+    #if DEBUG
+    case debug
+    #endif
 
     static let windowWidth: CGFloat = 400
     static let windowHeight: CGFloat = 396

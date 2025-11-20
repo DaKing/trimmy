@@ -44,6 +44,7 @@ struct TrimmyApp: App {
             SettingsView(
                 settings: self.settings,
                 hotkeyManager: self.hotkeyManager,
+                monitor: self.monitor,
                 updater: self.appDelegate.updaterController)
                 .onAppear {
                     self.startupDiagnostics.logAccessibilityStatus()

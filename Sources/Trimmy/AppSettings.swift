@@ -71,6 +71,10 @@ final class AppSettings: ObservableObject {
     var pasteOriginalHotkeyEnabledChanged: ((Bool) -> Void)?
     var autoTrimHotkeyEnabledChanged: ((Bool) -> Void)?
 
+    #if DEBUG
+    @AppStorage("debugStrikePreviewEnabled") var debugStrikePreviewEnabled: Bool = false
+    #endif
+
     init() {
         LaunchAtLoginManager.setEnabled(self.launchAtLogin)
     }

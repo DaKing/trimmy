@@ -21,15 +21,15 @@ struct MenuContentView: View {
 
             self.pasteButtons
             VStack(alignment: .leading, spacing: 2) {
-                Text("Last:")
+                Text("Preview (strike = removed):")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
-                Text(self.lastSummary)
-                    .font(.caption2)
+                self.previewLine
+                    .font(.caption2).monospaced()
                     .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
                     .frame(maxWidth: 260, alignment: .leading)
-                    .lineLimit(5)
             }
             Divider()
             Button("Settings…") {
@@ -44,10 +44,6 @@ struct MenuContentView: View {
         .padding(.horizontal, 10)
     }
 
-    private var lastSummary: String {
-        self.monitor.lastSummary.isEmpty ? "No actions yet" : self.monitor.lastSummary
-    }
-
     private func handlePasteTrimmed() {
         _ = self.monitor.pasteTrimmed()
     }
@@ -58,6 +54,10 @@ struct MenuContentView: View {
 
     private var targetAppLabel: String {
         ClipboardMonitor.ellipsize(self.monitor.frontmostAppName, limit: 30)
+    }
+
+    private var previewLine: Text {
+        Text(self.monitor.struckOriginalPreview())
     }
 
     private func open(tab: SettingsTab) {

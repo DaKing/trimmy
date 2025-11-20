@@ -17,6 +17,7 @@ final class ClipboardMonitor: ObservableObject {
     private let pasteIntoFrontmostApp: () -> Void
     private var ignoredChangeCounts: Set<Int> = []
     private var lastOriginalText: String?
+    private var lastTrimmedText: String?
 
     @Published var lastSummary: String = ""
     @Published var frontmostAppName: String = "current app"
@@ -205,9 +206,18 @@ extension ClipboardMonitor {
             return false
         }
         self.lastOriginalText = original
+        self.lastTrimmedText = nil
         self.updateSummary(with: original)
         self.performPaste(with: original)
         return true
+    }
+
+    func struckOriginalPreview() -> AttributedString {
+        guard let original = self.lastOriginalText else {
+            return AttributedString(self.lastSummary.isEmpty ? "No actions yet" : self.lastSummary)
+        }
+        let trimmed = self.lastTrimmedText ?? original
+        return ClipboardMonitor.struck(original: original, trimmed: trimmed)
     }
 }
 
@@ -272,6 +282,7 @@ extension ClipboardMonitor {
 
     private func cache(original: String?, trimmed: String?) {
         self.lastOriginalText = original
+        self.lastTrimmedText = trimmed
     }
 
     private func performPaste(with text: String) {
@@ -321,4 +332,44 @@ extension ClipboardMonitor {
         up?.flags = .maskCommand
         up?.post(tap: .cghidEventTap)
     }
+
+    static func struck(original: String, trimmed: String) -> AttributedString {
+        let displayOriginal = self.displayString(original)
+        let displayTrimmed = self.displayString(trimmed)
+        let base = NSMutableAttributedString(string: displayOriginal)
+
+        let origChars = Array(displayOriginal)
+        let trimmedChars = Array(displayTrimmed)
+        let diff = origChars.difference(from: trimmedChars)
+
+        for change in diff {
+            if case let .remove(offset, _, _) = change,
+               offset < base.length
+            {
+                let range = NSRange(location: offset, length: 1)
+                base.addAttributes([
+                    .strikethroughStyle: NSUnderlineStyle.single.rawValue,
+                    .foregroundColor: NSColor.systemRed,
+                ], range: range)
+            }
+        }
+
+        return AttributedString(base)
+    }
+
+    static func displayString(_ text: String) -> String {
+        text
+            .replacingOccurrences(of: "\n", with: "⏎ ")
+            .replacingOccurrences(of: "\t", with: "⇥ ")
+    }
 }
+
+#if DEBUG
+extension ClipboardMonitor {
+    func debugSetPreview(original: String, trimmed: String) {
+        self.lastOriginalText = original
+        self.lastTrimmedText = trimmed
+        self.updateSummary(with: trimmed)
+    }
+}
+#endif
