@@ -21,6 +21,7 @@ final class ClipboardMonitor: ObservableObject {
 
     @Published var lastSummary: String = ""
     @Published var frontmostAppName: String = "current app"
+    @Published var trimPulseID: Int = 0
 
     init(
         settings: AppSettings,
@@ -81,6 +82,7 @@ final class ClipboardMonitor: ObservableObject {
         self.writeTrimmed(variants.trimmed)
         self.lastSeenChangeCount = self.pasteboard.changeCount
         self.updateSummary(with: variants.trimmed)
+        self.registerTrimEvent()
         return true
     }
 
@@ -195,6 +197,7 @@ extension ClipboardMonitor {
             return false
         }
         self.updateSummary(with: variants.trimmed)
+        self.registerTrimEvent()
         self.performPaste(with: variants.trimmed)
         return true
     }
@@ -361,6 +364,18 @@ extension ClipboardMonitor {
         text
             .replacingOccurrences(of: "\n", with: "⏎ ")
             .replacingOccurrences(of: "\t", with: "⇥ ")
+    }
+}
+
+// MARK: - Trim animation hooks
+
+extension ClipboardMonitor {
+    func triggerTrimPulse() {
+        self.registerTrimEvent()
+    }
+
+    private func registerTrimEvent() {
+        self.trimPulseID &+= 1
     }
 }
 

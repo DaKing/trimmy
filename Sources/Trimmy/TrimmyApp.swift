@@ -36,6 +36,7 @@ struct TrimmyApp: App {
         } label: {
             Label("Trimmy", systemImage: "scissors")
                 .symbolRenderingMode(.hierarchical)
+                .symbolEffect(.pulse, options: .repeat(1).speed(1.15), value: self.monitor.trimPulseID)
                 .foregroundStyle(
                     self.settings.autoTrimEnabled ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
                 .opacity(self.settings.autoTrimEnabled ? 1.0 : 0.45)

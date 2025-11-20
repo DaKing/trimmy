@@ -27,6 +27,10 @@ struct DebugSettingsPane: View {
                 self.monitor.debugSetPreview(original: self.sampleOriginal, trimmed: self.sampleTrimmed)
             }
             .disabled(!self.settings.debugStrikePreviewEnabled)
+
+            Button("Trigger trim animation") {
+                self.monitor.triggerTrimPulse()
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 12)

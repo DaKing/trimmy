@@ -20,17 +20,12 @@ struct MenuContentView: View {
             .toggleStyle(.checkbox)
 
             self.pasteButtons
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Preview (strike = removed):")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                self.previewLine
-                    .font(.caption2).monospaced()
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                    .frame(maxWidth: 260, alignment: .leading)
-            }
+            self.previewLine
+                .font(.caption2).monospaced()
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .truncationMode(.middle)
+                .frame(maxWidth: 260, alignment: .leading)
             Divider()
             Button("Settings…") {
                 self.open(tab: .general)
