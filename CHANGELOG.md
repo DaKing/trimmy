@@ -11,6 +11,7 @@
 - Menu bar icon dims automatically when Auto-Trim is disabled so it’s obvious the service is paused.
 - Manual “Trim Clipboard” and its global shortcut now always run at High aggressiveness, while auto-trim honors the configured level; both shortcuts are fully configurable.
 - Hotkeys pane shows the actual shortcut glyphs, adds a quick Auto-Trim toggle in the menu, and includes an Accessibility banner with one-click prompts to grant Input Monitoring.
+- Clipboard flattening now stitches path segments split across lines (e.g. `~/.ssh/\ngithub_rsa.pub`) without inserting stray spaces; applies to auto-trim (your set aggressiveness), manual trim (High), and the Aggressiveness preview examples.
 - Ship a proper SwiftUI Settings window (General/Aggressiveness/Shortcuts/About tabs) instead of ad-hoc menus, with consistent sizing, padding, and macOS-style controls.
 
 ## 0.2.4 — 2025-11-17
