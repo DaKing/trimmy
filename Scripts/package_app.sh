@@ -4,6 +4,10 @@ CONF=${1:-debug}
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 
+# Force a clean build to avoid stale binaries.
+rm -rf "$ROOT/.build"
+swift package clean >/dev/null 2>&1 || true
+
 swift build -c "$CONF"
 APP="$ROOT/Trimmy.app"
 rm -rf "$APP"
@@ -21,6 +25,7 @@ FEED_URL="https://raw.githubusercontent.com/steipete/Trimmy/main/appcast.xml"
 AUTO_CHECKS=true
 LOWER_CONF=$(printf "%s" "$CONF" | tr '[:upper:]' '[:lower:]')
 BUILD_TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+GIT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 if [[ "$LOWER_CONF" == "debug" ]]; then
   BUNDLE_ID="com.steipete.trimmy.debug"
   FEED_URL=""
@@ -44,6 +49,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleIconFile</key><string>Icon</string>
     <key>NSHumanReadableCopyright</key><string>© 2025 Peter Steinberger. MIT License.</string>
     <key>TrimmyBuildTimestamp</key><string>${BUILD_TIMESTAMP}</string>
+    <key>TrimmyGitCommit</key><string>${GIT_COMMIT}</string>
     <key>SUFeedURL</key><string>${FEED_URL}</string>
     <key>SUPublicEDKey</key><string>AGCY8w5vHirVfGGDGc8Szc5iuOqupZSh9pMj/Qs67XI=</string>
     <key>SUEnableAutomaticChecks</key><${AUTO_CHECKS}/>

@@ -57,7 +57,9 @@ struct AboutPane: View {
                 Text("Version \(self.versionString)")
                     .foregroundStyle(.secondary)
                 if let buildTimestamp {
-                    Text("Built \(buildTimestamp)")
+                    let git = Bundle.main.object(forInfoDictionaryKey: "TrimmyGitCommit") as? String
+                    let suffix = (git?.isEmpty == false && git != "unknown") ? " (\(git!))" : ""
+                    Text("Built \(buildTimestamp)\(suffix)")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
