@@ -159,7 +159,8 @@ struct CommandDetector {
         guard !trimmed.isEmpty else { return false }
         if let last = trimmed.last, [".", "?", "!"].contains(last) { return false }
 
-        let hasCommandPunctuation = trimmed.contains(where: { "-./~$".contains($0) }) || trimmed.contains(where: \.isNumber)
+        let hasCommandPunctuation =
+            trimmed.contains(where: { "-./~$".contains($0) }) || trimmed.contains(where: \.isNumber)
         let firstToken = trimmed.split(separator: " ").first?.lowercased() ?? ""
         let knownPrefixes = [
             "sudo", "./", "~/", "apt", "brew", "git", "python", "pip", "pnpm", "npm", "yarn", "cargo",
