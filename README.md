@@ -1,4 +1,4 @@
-# Trimmy ✂️
+# Trimmy ✂️ - “Paste once, run once” — flattens multi-line shell snippets so they execute
 ![Trimmy logo](trimmy-logo.png)
 > "Paste once, run once." — Trimmy flattens those multi-line shell snippets you copy so they actually paste and run.
 
