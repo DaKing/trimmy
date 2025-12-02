@@ -2,6 +2,9 @@
 ![Trimmy logo](trimmy-logo.png)
 > "Paste once, run once." — Trimmy flattens those multi-line shell snippets you copy so they actually paste and run.
 
+![Trimmy menu showing trimmed/original actions](trimmy.png)
+![Terminal example before/after trimming](term-example.png)
+
 ## What it does
 - Lives in your macOS menu bar (macOS 15+). No Dock icon.
 - Watches the clipboard and, when it looks like a shell command, removes newlines (respects `\` continuations) and rewrites the clipboard automatically.
@@ -52,8 +55,6 @@ Get the precompiled binary from [Releases](https://github.com/steipete/Trimmy/re
 1. Build: `swift build -c release` (Swift 6, macOS 15+).
 2. Bundle: `./Scripts/package_app.sh release` → `Trimmy.app`.
 3. Launch: open `Trimmy.app` (or add to Login Items). Menu shows Auto-Trim toggle, Aggressiveness submenu, Keep blank lines toggle, Paste Trimmed/Paste Original actions, and a last-action status.
-
-![Trimmy UI](trimmy-screenshot.png)
 
 ## Lint / Format
 - Format: `swiftformat`.
