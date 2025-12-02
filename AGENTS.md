@@ -36,6 +36,7 @@ YOU MUST READ ~/Projects/agent-scripts/AGENTS.MD BEFORE ANYTHING (skip if file m
 ## Release & Validation Notes
 - Package with `./Scripts/package_app.sh release`, sign/notarize via `./Scripts/sign-and-notarize.sh`, then verify (`spctl`, `stapler`) per README checklist.
 - Do not edit generated bundles directly—regenerate via scripts. Preserve per-tab settings animation behavior when touching settings views.
+- Releases must only be performed when explicitly requested in the current prompt; permission is one-time and does not persist to future sessions.
 
 # Building Trimmy
 - Preferred workflow: run `Scripts/compile_and_run.sh` after code changes. It kills any running instance, runs build + tests, packages a debug app, and relaunches the menu bar app.
