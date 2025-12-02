@@ -9,4 +9,26 @@ struct BoxDrawingCleanupTests {
         let cleaned = CommandDetector.stripBoxDrawingCharacters(in: input)
         #expect(cleaned == "curl -I https://example.com | head -n 5")
     }
+
+    @Test
+    func collapsesMultipleBoxDrawingAfterPipe() {
+        let input = "cmd | │ │ grep foo"
+        let cleaned = CommandDetector.stripBoxDrawingCharacters(in: input)
+        #expect(cleaned == "cmd | grep foo")
+    }
+
+    @Test
+    func leavesBarsWhenNoPipePresent() {
+        let input = "│ this line has decoration but no pipe"
+        // Even without a pipe, lone box glyphs should be stripped.
+        let cleaned = CommandDetector.stripBoxDrawingCharacters(in: input)
+        #expect(cleaned == "this line has decoration but no pipe")
+    }
+
+    @Test
+    func preservesLegitPipesWithoutBoxDrawing() {
+        let input = "curl -I https://example.com | head -n 5"
+        let cleaned = CommandDetector.stripBoxDrawingCharacters(in: input)
+        #expect(cleaned == nil, "No box glyphs present → no change")
+    }
 }
