@@ -214,4 +214,25 @@ struct ClipboardMonitorTests {
         let strike = ns.attribute(.strikethroughStyle, at: pipeRange.location, effectiveRange: nil) as? Int
         #expect(strike == nil)
     }
+
+    @Test
+    func struckShowsWhitespaceRemoval() {
+        let original = "foo  bar"
+        let trimmed = "foo bar"
+
+        let attributed = ClipboardMonitor.struck(original: original, trimmed: trimmed)
+        let ns = NSAttributedString(attributed)
+
+        // Visible-whitespace renderer turns spaces into "·". One of the dots should be struck.
+        let rendered = ns.string
+        #expect(rendered.contains("··"))
+
+        var struckIndices: [Int] = []
+        for idx in 0..<ns.length where ns.attribute(.strikethroughStyle, at: idx, effectiveRange: nil) != nil {
+            struckIndices.append(idx)
+        }
+
+        #expect(struckIndices.count == 1)
+        #expect((rendered as NSString).substring(with: NSRange(location: struckIndices[0], length: 1)) == "·")
+    }
 }

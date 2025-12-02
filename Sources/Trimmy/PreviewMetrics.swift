@@ -36,6 +36,13 @@ enum PreviewMetrics {
             .replacingOccurrences(of: "\t", with: "⇥ ")
     }
 
+    static func displayStringWithVisibleWhitespace(_ text: String) -> String {
+        text
+            .replacingOccurrences(of: " ", with: "·")
+            .replacingOccurrences(of: "\t", with: "⇥")
+            .replacingOccurrences(of: "\n", with: "⏎")
+    }
+
     private static func truncationCount(for count: Int, limit: Int) -> Int {
         guard count > limit, limit > 0 else { return 0 }
         return (count + limit - 1) / limit - 1

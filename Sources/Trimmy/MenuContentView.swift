@@ -115,7 +115,7 @@ extension MenuContentView {
                 self.handlePasteOriginal()
             }
             .applyKeyboardShortcut(self.pasteOriginalKeyboardShortcut)
-            Text(self.monitor.struckOriginalPreview(limit: MenuPreview.limit))
+            Text(self.monitor.struckOriginalPreview())
                 .font(.caption2).monospaced()
                 .foregroundStyle(.secondary)
                 .lineLimit(2)

@@ -215,12 +215,12 @@ extension ClipboardMonitor {
         return true
     }
 
-    func struckOriginalPreview(limit: Int? = nil) -> AttributedString {
+    func struckOriginalPreview(limit _: Int? = nil) -> AttributedString {
         guard let original = self.lastOriginalText else {
             return AttributedString(self.lastSummary.isEmpty ? "No actions yet" : self.lastSummary)
         }
         let trimmed = self.lastTrimmedText ?? original
-        return ClipboardMonitor.struck(original: original, trimmed: trimmed, limit: limit)
+        return ClipboardMonitor.struck(original: original, trimmed: trimmed, limit: nil)
     }
 
     func trimmedPreviewText() -> String {
@@ -365,11 +365,11 @@ extension ClipboardMonitor {
     }
 
     static func struck(original: String, trimmed: String, limit: Int? = nil) -> AttributedString {
-        let baseOriginal = PreviewMetrics.displayString(original)
-        let baseTrimmed = PreviewMetrics.displayString(trimmed)
-        let displayOriginal = limit.map { ClipboardMonitor.ellipsize(baseOriginal, limit: $0) } ?? baseOriginal
-        let displayTrimmed = limit.map { ClipboardMonitor.ellipsize(baseTrimmed, limit: $0) } ?? baseTrimmed
-        let base = NSMutableAttributedString(string: displayOriginal)
+        let baseOriginal = PreviewMetrics.displayStringWithVisibleWhitespace(original)
+        let baseTrimmed = PreviewMetrics.displayStringWithVisibleWhitespace(trimmed)
+        let displayOriginal = baseOriginal
+        let displayTrimmed = baseTrimmed
+        let base = NSMutableAttributedString(string: baseOriginal)
 
         // Two-pointer diff so we only strike characters that are truly removed,
         // instead of allowing the longest-common-subsequence algorithm to
