@@ -1,10 +1,12 @@
 # Changelog
 
+## 0.4.6 — Unreleased
+- Further tightened box-glyph cleanup so terminal-wrapped URLs (e.g., `releases/ │ download/...`) rejoin correctly without extra spaces.
+
 ## 0.4.5 — 2025-12-02
 - Menu previews now show up to 100 characters (both trimmed and original) while keeping per-row truncation badges aligned with the longer limit.
 - Paste Original row now shows only character count (no “trimmed” badge); trimmed badge remains on Paste Trimmed.
 - Box-drawing cleanup: strip decorative “│” after real pipes and even when copied alone; added regression coverage for terminal-style decorations.
-- Further tightened box-glyph cleanup so terminal-wrapped URLs (e.g., `releases/ │ download/...`) rejoin correctly without extra spaces.
 
 ## 0.4.4 — 2025-12-01
 - Fixed a crash when opening Settings → Shortcuts by ensuring the KeyboardShortcuts resource bundle is packaged into Trimmy.app; packaging now fails if SwiftPM bundles are missing and a regression test guards bundle availability.
