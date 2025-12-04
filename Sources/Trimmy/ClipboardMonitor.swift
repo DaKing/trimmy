@@ -193,10 +193,12 @@ final class ClipboardMonitor: ObservableObject {
 // MARK: - On-demand pasting
 
 extension ClipboardMonitor {
+    private static let accessibilityPermissionMessage = "Enable Accessibility to let Trimmy paste (System Settings → Privacy & Security → Accessibility)."
+
     @discardableResult
     func pasteTrimmed() -> Bool {
         guard self.accessibilityPermission.isTrusted else {
-            self.lastSummary = "Enable Accessibility to let Trimmy paste (System Settings → Privacy & Security → Accessibility)."
+            self.lastSummary = Self.accessibilityPermissionMessage
             return false
         }
         guard let variants = self.cachedOrCurrentVariantsForPaste(force: true) else {
@@ -212,7 +214,7 @@ extension ClipboardMonitor {
     @discardableResult
     func pasteOriginal() -> Bool {
         guard self.accessibilityPermission.isTrusted else {
-            self.lastSummary = "Enable Accessibility to let Trimmy paste (System Settings → Privacy & Security → Accessibility)."
+            self.lastSummary = Self.accessibilityPermissionMessage
             return false
         }
         guard let original = self.lastOriginalText ?? self.clipboardText() else {

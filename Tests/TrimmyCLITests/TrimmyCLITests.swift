@@ -44,7 +44,7 @@ struct TrimmyCLITests {
         let input = TrimmyCLI._testReadInput(path: nil, stdinData: nil, isTTY: true)
         #expect(input == nil)
 
-        let piped = "echo hi".data(using: .utf8)
+        let piped = Data("echo hi".utf8)
         let pipedResult = TrimmyCLI._testReadInput(path: nil, stdinData: piped, isTTY: false)
         #expect(pipedResult == "echo hi")
     }

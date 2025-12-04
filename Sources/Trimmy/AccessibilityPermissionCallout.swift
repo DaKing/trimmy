@@ -13,7 +13,8 @@ struct AccessibilityPermissionCallout: View {
                     Text("Accessibility needed to paste")
                         .font(.callout.weight(.semibold))
                     Text(
-                        "Enable Trimmy in System Settings → Privacy & Security → Accessibility so ⌘V can be sent to the front app.")
+                        "Enable Trimmy in System Settings → Privacy & Security → Accessibility "
+                            + "so ⌘V can be sent to the front app.")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
