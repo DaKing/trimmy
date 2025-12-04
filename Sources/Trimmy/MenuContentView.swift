@@ -8,12 +8,16 @@ struct MenuContentView: View {
     @ObservedObject var monitor: ClipboardMonitor
     @ObservedObject var settings: AppSettings
     @ObservedObject var hotkeyManager: HotkeyManager
+    @ObservedObject var permissions: AccessibilityPermissionManager
     let updater: UpdaterProviding
 
     @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
+            if !self.permissions.isTrusted {
+                AccessibilityPermissionCallout(permissions: self.permissions, compactButtons: true)
+            }
             self.pasteButtons
             Divider()
             Toggle(isOn: self.$settings.autoTrimEnabled) {

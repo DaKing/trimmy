@@ -7,6 +7,7 @@ final class ClipboardMonitor: ObservableObject {
     private let settings: AppSettings
     private let pasteboard: NSPasteboard
     private let trimmyMarker = NSPasteboard.PasteboardType("com.steipete.trimmy")
+    private let accessibilityPermission: AccessibilityPermissionChecking
     private var timer: DispatchSourceTimer?
     private var lastSeenChangeCount: Int
     private var detector: CommandDetector { CommandDetector(settings: self.settings) }
@@ -27,10 +28,12 @@ final class ClipboardMonitor: ObservableObject {
         settings: AppSettings,
         pasteboard: NSPasteboard = NSPasteboard.general,
         pasteRestoreDelay: DispatchTimeInterval = .milliseconds(200),
-        pasteAction: (() -> Void)? = nil)
+        pasteAction: (() -> Void)? = nil,
+        accessibilityPermission: AccessibilityPermissionChecking = AccessibilityPermissionManager())
     {
         self.settings = settings
         self.pasteboard = pasteboard
+        self.accessibilityPermission = accessibilityPermission
         self.pasteRestoreDelay = pasteRestoreDelay
         self.pasteIntoFrontmostApp = pasteAction ?? ClipboardMonitor.sendPasteCommand
         self.lastSeenChangeCount = self.pasteboard.changeCount
@@ -192,6 +195,10 @@ final class ClipboardMonitor: ObservableObject {
 extension ClipboardMonitor {
     @discardableResult
     func pasteTrimmed() -> Bool {
+        guard self.accessibilityPermission.isTrusted else {
+            self.lastSummary = "Enable Accessibility to let Trimmy paste (System Settings → Privacy & Security → Accessibility)."
+            return false
+        }
         guard let variants = self.cachedOrCurrentVariantsForPaste(force: true) else {
             self.lastSummary = "Nothing to paste."
             return false
@@ -204,6 +211,10 @@ extension ClipboardMonitor {
 
     @discardableResult
     func pasteOriginal() -> Bool {
+        guard self.accessibilityPermission.isTrusted else {
+            self.lastSummary = "Enable Accessibility to let Trimmy paste (System Settings → Privacy & Security → Accessibility)."
+            return false
+        }
         guard let original = self.lastOriginalText ?? self.clipboardText() else {
             self.lastSummary = "Nothing to paste."
             return false

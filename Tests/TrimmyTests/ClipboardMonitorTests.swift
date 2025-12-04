@@ -5,12 +5,21 @@ import Testing
 @MainActor
 @Suite(.serialized)
 struct ClipboardMonitorTests {
+    @MainActor
+    private final class StubAccessibilityPermission: AccessibilityPermissionChecking {
+        var isTrusted: Bool
+        init(isTrusted: Bool = true) { self.isTrusted = isTrusted }
+    }
+
     @Test
     func clipboardTextIgnoresMarker() {
         let settings = AppSettings()
         let pasteboard = makeTestPasteboard()
         settings.autoTrimEnabled = true
-        let monitor = ClipboardMonitor(settings: settings, pasteboard: pasteboard)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
         pasteboard.setString("echo hi\nls -la", forType: .string)
         _ = monitor.trimClipboardIfNeeded(force: false)
         #expect(monitor.clipboardText() != nil)
@@ -21,7 +30,10 @@ struct ClipboardMonitorTests {
         let settings = AppSettings()
         settings.autoTrimEnabled = false
         let pasteboard = makeTestPasteboard()
-        let monitor = ClipboardMonitor(settings: settings, pasteboard: pasteboard)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
         pasteboard.setString("echo hi\nls -la", forType: .string)
         _ = monitor.trimClipboardIfNeeded(force: true)
         pasteboard.setString("echo hi\nls -la", forType: .string)
@@ -34,7 +46,10 @@ struct ClipboardMonitorTests {
         let settings = AppSettings()
         settings.autoTrimEnabled = false
         let pasteboard = makeTestPasteboard()
-        let monitor = ClipboardMonitor(settings: settings, pasteboard: pasteboard)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
         pasteboard.setString("single line", forType: .string)
         #expect(monitor.trimmedClipboardText(force: true) == "single line")
     }
@@ -44,7 +59,10 @@ struct ClipboardMonitorTests {
         let settings = AppSettings()
         settings.autoTrimEnabled = false
         let pasteboard = makeTestPasteboard()
-        let monitor = ClipboardMonitor(settings: settings, pasteboard: pasteboard)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
 
         pasteboard.setString(
             """
@@ -64,7 +82,10 @@ struct ClipboardMonitorTests {
         let settings = AppSettings()
         settings.autoTrimEnabled = true
         let pasteboard = makeTestPasteboard()
-        let monitor = ClipboardMonitor(settings: settings, pasteboard: pasteboard)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
 
         let first = """
         echo hi \\
@@ -95,7 +116,10 @@ struct ClipboardMonitorTests {
         settings.aggressiveness = .low
         settings.autoTrimEnabled = true
         let pasteboard = makeTestPasteboard()
-        let monitor = ClipboardMonitor(settings: settings, pasteboard: pasteboard)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
 
         let expectedURL =
             "https://github.blog/changelog/2025-07-14-"
@@ -119,7 +143,10 @@ struct ClipboardMonitorTests {
         settings.aggressiveness = .low
         settings.autoTrimEnabled = true
         let pasteboard = makeTestPasteboard()
-        let monitor = ClipboardMonitor(settings: settings, pasteboard: pasteboard)
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            accessibilityPermission: StubAccessibilityPermission())
 
         let twoUrls = """
         https://example.com/foo
@@ -141,10 +168,11 @@ struct ClipboardMonitorTests {
         let monitor = ClipboardMonitor(
             settings: settings,
             pasteboard: pasteboard,
-            pasteRestoreDelay: .milliseconds(0))
-        {
-            pasteTriggered = true
-        }
+            pasteRestoreDelay: .milliseconds(0),
+            pasteAction: {
+                pasteTriggered = true
+            },
+            accessibilityPermission: StubAccessibilityPermission())
 
         pasteboard.setString(
             """
@@ -163,6 +191,23 @@ struct ClipboardMonitorTests {
     }
 
     @Test
+    func pasteFailsGracefullyWhenAccessibilityMissing() {
+        let settings = AppSettings()
+        let pasteboard = makeTestPasteboard()
+        let monitor = ClipboardMonitor(
+            settings: settings,
+            pasteboard: pasteboard,
+            pasteRestoreDelay: .milliseconds(0),
+            pasteAction: {},
+            accessibilityPermission: StubAccessibilityPermission(isTrusted: false))
+
+        pasteboard.setString("echo hi", forType: .string)
+        let didPaste = monitor.pasteTrimmed()
+        #expect(didPaste == false)
+        #expect(monitor.lastSummary.contains("Accessibility"))
+    }
+
+    @Test
     func pasteOriginalUsesCachedPreTrimCopy() {
         let settings = AppSettings()
         settings.autoTrimEnabled = true
@@ -171,7 +216,8 @@ struct ClipboardMonitorTests {
             settings: settings,
             pasteboard: pasteboard,
             pasteRestoreDelay: .milliseconds(0),
-            pasteAction: {})
+            pasteAction: {},
+            accessibilityPermission: StubAccessibilityPermission())
 
         let original = """
         echo hi \\

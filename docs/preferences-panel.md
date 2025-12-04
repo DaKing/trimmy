@@ -145,3 +145,7 @@ Most apps don’t need it. SwiftUI’s `Settings` scene + `TabView` + grouped `F
 - Single-instance Settings window bound to ⌘,
 - Native two-column rows, dark mode, hover states
 If you later need custom placements, borderless windows, or fine-grained toolbar tweaks, you can layer AppKit on top—but start with pure SwiftUI.
+
+## 9) Accessibility permission callout
+- When `AXIsProcessTrusted()` is false, show an inline callout in the General tab with buttons that trigger the system Accessibility prompt (`AXIsProcessTrustedWithOptions`) and deep-link to Privacy & Security → Accessibility.
+- Mirror the callout in the menu bar popover so users understand why “Paste Trimmed/Original” does nothing until permission is granted.

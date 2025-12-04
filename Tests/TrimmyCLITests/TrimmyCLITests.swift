@@ -38,4 +38,26 @@ struct TrimmyCLITests {
         let result = cliTrim(input, settings: CLISettings(preserveBlankLines: true), force: false)
         #expect(result.trimmed.contains("\n\n"))
     }
+
+    @Test
+    func readInputDoesNotBlockWhenTty() {
+        let input = TrimmyCLI._testReadInput(path: nil, stdinData: nil, isTTY: true)
+        #expect(input == nil)
+
+        let piped = "echo hi".data(using: .utf8)
+        let pipedResult = TrimmyCLI._testReadInput(path: nil, stdinData: piped, isTTY: false)
+        #expect(pipedResult == "echo hi")
+    }
+
+    @Test
+    func versionStringAvailable() {
+        #expect(!TrimmyCLI._testVersion.isEmpty)
+    }
+
+    @Test
+    func helpIncludesVersionAndSynopsis() {
+        let help = TrimmyCLI.helpText(version: "0.6.0-test")
+        #expect(help.contains("Version: 0.6.0-test"))
+        #expect(help.contains("trimmy --trim"))
+    }
 }

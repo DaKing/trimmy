@@ -80,6 +80,7 @@ swift build -c "$CONF"
 APP="$ROOT/Trimmy.app"
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
+mkdir -p "$APP/Contents/Helpers"
 
 # Convert .icon (macOS 15 IconStudio format) to .icns if present
 ICON_SOURCE="$ROOT/Icon.icon"
@@ -110,8 +111,8 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleIdentifier</key><string>${BUNDLE_ID}</string>
     <key>CFBundleExecutable</key><string>Trimmy</string>
     <key>CFBundlePackageType</key><string>APPL</string>
-    <key>CFBundleShortVersionString</key><string>0.5.1</string>
-    <key>CFBundleVersion</key><string>19</string>
+    <key>CFBundleShortVersionString</key><string>${MARKETING_VERSION}</string>
+    <key>CFBundleVersion</key><string>${BUILD_NUMBER}</string>
     <key>LSMinimumSystemVersion</key><string>15.0</string>
     <key>LSUIElement</key><true/>
     <key>CFBundleIconFile</key><string>Icon</string>
@@ -127,6 +128,11 @@ PLIST
 
 cp ".build/$CONF/Trimmy" "$APP/Contents/MacOS/Trimmy"
 chmod +x "$APP/Contents/MacOS/Trimmy"
+# Ship TrimmyCLI alongside the app for easy symlinking.
+if [[ -f ".build/$CONF/TrimmyCLI" ]]; then
+  cp ".build/$CONF/TrimmyCLI" "$APP/Contents/Helpers/TrimmyCLI"
+  chmod +x "$APP/Contents/Helpers/TrimmyCLI"
+fi
 
 # SwiftPM resource bundles (e.g. KeyboardShortcuts) need to be copied into the app bundle
 shopt -s nullglob

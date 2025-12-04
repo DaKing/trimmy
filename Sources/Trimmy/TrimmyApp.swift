@@ -8,6 +8,7 @@ import SwiftUI
 struct TrimmyApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var settings = AppSettings()
+    @StateObject private var permissions = AccessibilityPermissionManager()
     @StateObject private var monitor: ClipboardMonitor
     @StateObject private var hotkeyManager: HotkeyManager
     @State private var isMenuPresented = false
@@ -16,10 +17,12 @@ struct TrimmyApp: App {
 
     init() {
         let settings = AppSettings()
-        let monitor = ClipboardMonitor(settings: settings)
+        let permissions = AccessibilityPermissionManager()
+        let monitor = ClipboardMonitor(settings: settings, accessibilityPermission: permissions)
         monitor.start()
         let hotkeyManager = HotkeyManager(settings: settings, monitor: monitor)
         _settings = StateObject(wrappedValue: settings)
+        _permissions = StateObject(wrappedValue: permissions)
         _monitor = StateObject(wrappedValue: monitor)
         _hotkeyManager = StateObject(wrappedValue: hotkeyManager)
     }
@@ -30,6 +33,7 @@ struct TrimmyApp: App {
                 monitor: self.monitor,
                 settings: self.settings,
                 hotkeyManager: self.hotkeyManager,
+                permissions: self.permissions,
                 updater: self.appDelegate.updaterController)
             Divider()
             Button("Quit") { NSApplication.shared.terminate(nil) }
@@ -41,6 +45,7 @@ struct TrimmyApp: App {
                 settings: self.settings,
                 hotkeyManager: self.hotkeyManager,
                 monitor: self.monitor,
+                permissions: self.permissions,
                 updater: self.appDelegate.updaterController)
                 .onAppear {
                     self.startupDiagnostics.logAccessibilityStatus()

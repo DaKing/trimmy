@@ -12,12 +12,24 @@ struct CLITrimResult { let original: String; let trimmed: String; let transforme
 
 @main
 struct TrimmyCLI {
+    private static let bundledVersion: String = {
+        if let infoVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            return infoVersion
+        }
+        return "0.6.0"
+    }()
+
     static func main() {
         let args = Array(CommandLine.arguments.dropFirst())
         var force = false
         var inputPath: String?
         var json = false
         var settings = CLISettings()
+
+        if args.contains("--version") || args.contains("-v") {
+            print("TrimmyCLI \(self.bundledVersion)")
+            exit(0)
+        }
 
         var idx = 0
         while idx < args.count {
@@ -78,21 +90,40 @@ struct TrimmyCLI {
         exit(result.transformed ? 0 : 2)
     }
 
-    private static func readInput(path: String?) -> String? {
+    private static func readInput(
+        path: String?,
+        stdinData: Data? = nil,
+        isTTY: Bool = isatty(STDIN_FILENO) == 1) -> String?
+    {
         if let path, !path.isEmpty {
             return try? String(contentsOfFile: path, encoding: .utf8)
         }
-        let data = FileHandle.standardInput.readDataToEndOfFile()
+
+        if isTTY {
+            guard let data = stdinData, !data.isEmpty else { return nil }
+            return String(data: data, encoding: .utf8)
+        }
+
+        let data = stdinData ?? FileHandle.standardInput.readDataToEndOfFile()
         guard !data.isEmpty else { return nil }
         return String(data: data, encoding: .utf8)
     }
 
-    private static func printHelp() {
-        let help = """
-        TrimmyCLI – headless trimmer
+    #if DEBUG
+    static func _testReadInput(path: String?, stdinData: Data?, isTTY: Bool) -> String? {
+        self.readInput(path: path, stdinData: stdinData, isTTY: isTTY)
+    }
+
+    static var _testVersion: String { self.bundledVersion }
+    #endif
+
+    static func helpText(version: String = TrimmyCLI.bundledVersion) -> String {
+        """
+        trimmy – flattens multi-line shell snippets so they execute
+        Version: \(version)
 
         Usage:
-          trimmycli --trim [file] [options]    Trim input from file or stdin.
+          trimmy --trim [file] [options]    Trim input from file or stdin.
 
         Options:
           --trim <file>              Input file (optional; stdin if omitted)
@@ -103,6 +134,7 @@ struct TrimmyCLI {
           --remove-box-drawing       Strip box-drawing characters (default true)
           --keep-box-drawing         Disable box-drawing removal
           --json                     Emit JSON {original, trimmed, transformed}
+          --version, -v              Print version
           --help, -h                 Show help
 
         Exit codes:
@@ -110,7 +142,10 @@ struct TrimmyCLI {
           1  no input / error reading
           2  no transformation applied (for callers who need to detect changes)
         """
-        print(help)
+    }
+
+    private static func printHelp() {
+        print(self.helpText())
     }
 }
 

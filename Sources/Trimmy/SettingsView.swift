@@ -5,12 +5,13 @@ struct SettingsView: View {
     @ObservedObject var settings: AppSettings
     @ObservedObject var hotkeyManager: HotkeyManager
     @ObservedObject var monitor: ClipboardMonitor
+    @ObservedObject var permissions: AccessibilityPermissionManager
     weak var updater: UpdaterProviding?
     @State private var selectedTab: SettingsTab = .general
 
     var body: some View {
         TabView(selection: self.$selectedTab) {
-            GeneralSettingsPane(settings: self.settings)
+            GeneralSettingsPane(settings: self.settings, permissions: self.permissions)
                 .tabItem { Label("General", systemImage: "gearshape") }
                 .tag(SettingsTab.general)
 
@@ -65,7 +66,7 @@ enum SettingsTab: String, Hashable, CaseIterable, Codable {
     #endif
 
     static let windowWidth: CGFloat = 410
-    static let windowHeight: CGFloat = 440
+    static let windowHeight: CGFloat = 484
 }
 
 extension Notification.Name {

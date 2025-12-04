@@ -34,6 +34,8 @@ read_when:
    - SwiftUI Settings window (macOS-standard Settings scene) with Aggressiveness picker (Low/Normal/High), Keep blank lines checkbox, Auto-trim checkbox.
 7. **Last action preview**: menu shows truncated (~70 chars) version of last trimmed command.
 8. **Accessory app**: no Dock icon, lives in menu bar; quit from menu.
+9. **Accessibility permission UX**: when Accessibility is missing, Trimmy blocks paste commands and shows actionable callouts (menu + Settings) to trigger the system prompt and open the Privacy & Security › Accessibility pane.
+10. **CLI helper**: Settings → General exposes an installer that symlinks the bundled helper into `/usr/local/bin` and `/opt/homebrew/bin` as `trimmy` for headless use.
 
 ## Non-Functional Requirements
 - Platform: macOS 15.0+; Swift 6; SwiftUI for UI and settings; AppKit for pasteboard access.
