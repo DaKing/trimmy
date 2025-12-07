@@ -83,6 +83,9 @@ struct MenuContentView: View {
         ]
 
         NSApplication.shared.orderFrontStandardAboutPanel(options: options)
+        if let aboutPanel = NSApp.windows.first(where: { $0.className.contains("About") }) {
+            self.removeFocusRings(in: aboutPanel.contentView)
+        }
     }
 
     private func makeLink(_ title: String, urlString: String) -> NSAttributedString {
@@ -97,6 +100,16 @@ struct MenuContentView: View {
         NSAttributedString(string: " · ", attributes: [
             .font: NSFont.systemFont(ofSize: NSFont.smallSystemFontSize),
         ])
+    }
+
+    private func removeFocusRings(in view: NSView?) {
+        guard let view else { return }
+        if let imageView = view as? NSImageView {
+            imageView.focusRingType = .none
+        }
+        for subview in view.subviews {
+            self.removeFocusRings(in: subview)
+        }
     }
 }
 
