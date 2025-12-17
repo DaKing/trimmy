@@ -86,6 +86,7 @@ private struct ScissorStatusLabel: View {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let updaterController: UpdaterProviding = makeUpdaterController()
 
@@ -116,6 +117,7 @@ struct StartupDiagnostics {
 protocol UpdaterProviding: AnyObject {
     var automaticallyChecksForUpdates: Bool { get set }
     var isAvailable: Bool { get }
+    var unavailableReason: String? { get }
     func checkForUpdates(_ sender: Any?)
 }
 
@@ -123,6 +125,12 @@ protocol UpdaterProviding: AnyObject {
 final class DisabledUpdaterController: UpdaterProviding {
     var automaticallyChecksForUpdates: Bool = false
     let isAvailable: Bool = false
+    let unavailableReason: String?
+
+    init(unavailableReason: String? = nil) {
+        self.unavailableReason = unavailableReason
+    }
+
     func checkForUpdates(_: Any?) {}
 }
 
@@ -136,6 +144,7 @@ extension SPUStandardUpdaterController: UpdaterProviding {
     }
 
     var isAvailable: Bool { true }
+    var unavailableReason: String? { nil }
 }
 
 private func isDeveloperIDSigned(bundleURL: URL) -> Bool {
@@ -155,10 +164,22 @@ private func isDeveloperIDSigned(bundleURL: URL) -> Bool {
     return false
 }
 
+@MainActor
 private func makeUpdaterController() -> UpdaterProviding {
     let bundleURL = Bundle.main.bundleURL
     let isBundledApp = bundleURL.pathExtension == "app"
-    guard isBundledApp, isDeveloperIDSigned(bundleURL: bundleURL) else { return DisabledUpdaterController() }
+    guard isBundledApp else {
+        return DisabledUpdaterController(unavailableReason: "Updates unavailable in this build.")
+    }
+
+    if InstallOrigin.isHomebrewCask(appBundleURL: bundleURL) {
+        return DisabledUpdaterController(
+            unavailableReason: "Updates managed by Homebrew. Run: brew upgrade --cask steipete/tap/trimmy")
+    }
+
+    guard isDeveloperIDSigned(bundleURL: bundleURL) else {
+        return DisabledUpdaterController(unavailableReason: "Updates unavailable in this build.")
+    }
 
     let defaults = UserDefaults.standard
     let autoUpdateKey = "autoUpdateEnabled"
@@ -174,7 +195,8 @@ private func makeUpdaterController() -> UpdaterProviding {
     return controller
 }
 #else
+@MainActor
 private func makeUpdaterController() -> UpdaterProviding {
-    DisabledUpdaterController()
+    DisabledUpdaterController(unavailableReason: "Updates unavailable in this build.")
 }
 #endif

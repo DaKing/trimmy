@@ -49,7 +49,9 @@
 - **Prompt cleanup** — copies that start with `# ` or `$ ` are de-promoted when they look like shell commands, e.g. `# brew install foo` → `brew install foo`; Markdown headings like `# Release Notes` remain untouched.
 
 ## Quick start
-Get the precompiled binary from [Releases](https://github.com/steipete/Trimmy/releases)
+Get the precompiled binary from [Releases](https://github.com/steipete/Trimmy/releases) or install via Homebrew:
+
+- Homebrew (UI app; Sparkle disabled): `brew install --cask steipete/tap/trimmy` (update via `brew upgrade --cask steipete/tap/trimmy`)
 
 
 1. Build: `swift build -c release` (Swift 6, macOS 15+).
@@ -89,6 +91,7 @@ Options:
 - [ ] ./Scripts/sign-and-notarize.sh
 - [ ] Verify: `spctl -a -t exec -vv Trimmy.app`; `stapler validate Trimmy.app`
 - [ ] Upload release zip and tag
+- [ ] Homebrew: update `../homebrew-tap/Casks/trimmy.rb` with new `version` + `sha256`
 
 ## Notes
 - Bundle ID: `com.steipete.trimmy` (LSUIElement menu-bar app).

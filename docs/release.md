@@ -13,6 +13,7 @@ SwiftPM only; manual package/sign/notarize. Sparkle feed served from GitHub Rele
 
 ## Expectations
 - When asked to “release” a version, execute the full, end-to-end flow: bump versions/CHANGELOG, build, sign & notarize, upload the zip to the GitHub release, generate/update the appcast with the new signature, publish the release/tag, and verify the enclosure downloads successfully via HTTP (no 404s) and installs.
+- If the version is shipped via Homebrew, update the tap cask too (see `docs/releasing-homebrew.md`).
 
 ### Release automation notes (Scripts/release.sh)
 - Always forces a fresh rebuild/notarization (no cached artifacts) to avoid stale Swift outputs.
