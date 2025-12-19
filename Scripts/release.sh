@@ -134,7 +134,7 @@ ver = sys.argv[1]
 today = datetime.date.today().strftime("%Y-%m-%d")
 p = pathlib.Path("CHANGELOG.md")
 text = p.read_text()
-pat = re.compile(rf"^##\s+{re.escape(ver)}\s+—\s+.*?(unreleased)?", re.M | re.I)
+pat = re.compile(rf"^##\s+{re.escape(ver)}\s+—\s+.*$", re.M)
 new, n = pat.subn(f"## {ver} — {today}", text, count=1)
 if n == 0:
     sys.exit("Changelog section not found for version")
