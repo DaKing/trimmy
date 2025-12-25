@@ -116,7 +116,10 @@ struct UpdateSettingsPane: View {
                 LabeledContent("Automatically check for updates") {
                     Toggle("", isOn: Binding(
                         get: { updater.automaticallyChecksForUpdates },
-                        set: { updater.automaticallyChecksForUpdates = $0 })
+                        set: {
+                            updater.automaticallyChecksForUpdates = $0
+                            updater.automaticallyDownloadsUpdates = $0
+                        })
                     )
                 }
                 Button("Check for Updates…") { updater.checkForUpdates(nil) }
