@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.6.5 — Unreleased
+- TBD
+
 ## 0.6.4 — 2025-12-26
 - Sparkle: auto-download updates when auto-check is enabled, and only show the restart menu entry once an update is ready.
 - Command detection: flatten “command + indented args” copies (e.g. emails + flags) into a single pasteable line at Normal aggressiveness; skip transforms for snippets longer than 4 lines.
