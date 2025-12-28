@@ -70,8 +70,10 @@ final class ClipboardMonitor: ObservableObject {
     func trimClipboardIfNeeded(force: Bool = false) -> Bool {
         let changeCount = self.pasteboard.changeCount
         self.lastSeenChangeCount = changeCount
+        self.logTrimCheck(changeCount: changeCount, force: force)
 
         guard let variants = self.makeVariants(force: force, ignoreMarker: force) else {
+            self.logTrimSkip(reason: "noVariants", force: force)
             // For forced/manual trims, still surface the current clipboard text in “Last” even when
             // nothing was transformed, so the menu reflects what the user tried to trim.
             if force, let raw = self.readTextFromPasteboard(ignoreMarker: true) {
@@ -81,11 +83,20 @@ final class ClipboardMonitor: ObservableObject {
             return false
         }
 
-        guard self.settings.autoTrimEnabled || force else { return false }
+        guard self.settings.autoTrimEnabled || force else {
+            self.logTrimSkip(reason: "autoTrimDisabled", force: force)
+            return false
+        }
 
         self.writeTrimmed(variants.trimmed)
         self.lastSeenChangeCount = self.pasteboard.changeCount
         self.updateSummary(with: variants.trimmed)
+        self.logTrimApplied(
+            original: variants.original,
+            trimmed: variants.trimmed,
+            force: force,
+            transformed: variants.wasTransformed
+        )
         self.registerTrimEvent()
         return true
     }
@@ -212,6 +223,26 @@ final class ClipboardMonitor: ObservableObject {
     private func logPasteboardReadSkipped(reason: String) {
         Telemetry.clipboard.debug("Pasteboard read skipped reason=\(reason, privacy: .public)")
     }
+
+    private func logTrimCheck(changeCount: Int, force: Bool) {
+        Telemetry.clipboard.debug(
+            "Trim check changeCount=\(changeCount, privacy: .public) autoTrimEnabled=\(self.settings.autoTrimEnabled, privacy: .public) force=\(force, privacy: .public)"
+        )
+    }
+
+    private func logTrimSkip(reason: String, force: Bool) {
+        Telemetry.clipboard.debug(
+            "Trim skipped reason=\(reason, privacy: .public) force=\(force, privacy: .public)"
+        )
+    }
+
+    private func logTrimApplied(original: String, trimmed: String, force: Bool, transformed: Bool) {
+        let originalCount = original.count
+        let trimmedCount = trimmed.count
+        Telemetry.clipboard.debug(
+            "Trim applied transformed=\(transformed, privacy: .public) force=\(force, privacy: .public) lengths=\(originalCount, privacy: .public)->\(trimmedCount, privacy: .public)"
+        )
+    }
 }
 
 // MARK: - On-demand pasting
@@ -302,6 +333,7 @@ extension ClipboardMonitor {
     private func makeVariants(force: Bool, ignoreMarker: Bool) -> ClipboardVariants? {
         guard let text = self.readTextFromPasteboard(ignoreMarker: ignoreMarker || force) else {
             self.cache(original: nil, trimmed: nil)
+            self.logTrimSkip(reason: "emptyClipboard", force: force)
             return nil
         }
 
@@ -311,7 +343,11 @@ extension ClipboardMonitor {
         if force {
             return variants
         }
-        return variants.wasTransformed ? variants : nil
+        if variants.wasTransformed {
+            return variants
+        }
+        self.logTrimSkip(reason: "noTransform", force: force)
+        return nil
     }
 
     private func transform(text: String, force: Bool) -> ClipboardVariants {
