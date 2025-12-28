@@ -137,6 +137,12 @@ code /Users/steipete/Projects/Trimmy/docs/manual-testing-peekaboo.md
 Update the “Latest run” block with date, machine, and outcome.
 
 ## Latest run
+- Date: 2025-12-28 16:18 local
+- Machine: macOS 26.x (arm64)
+- Menu bar capture: `see --menubar --app Trimmy` attempted auto-click; still no popover detected; OCR empty.
+- Screenshot: `/tmp/trimmy-menubar.png` (menubar OCR, empty).
+
+## Previous run
 - Date: 2025-12-28 16:01 local
 - Machine: macOS 26.x (arm64)
 - Menu bar click: `menubar click --verify "Trimmy"` succeeded; `see --menubar --app Trimmy` returned empty OCR (no popover detected).
@@ -148,7 +154,7 @@ Update the “Latest run” block with date, machine, and outcome.
 - See (General): `peekaboo see --app Trimmy --window-title "General"` succeeded; snapshot `2E5A7CDD-B883-4EF9-8BA0-3BDB501C019E`.
 - Clipboard E2E: clipboard set/get OK; Auto-trim still did not change output after 1s (multiline).
 
-## Previous run
+## Earlier run
 - Date: 2025-12-28 15:34 local
 - Machine: macOS 26.2 (arm64)
 - Menu bar click: `menubar click --verify "Trimmy"` + `--index 6` failed (popover not detected); fallback AppleScript open worked.
