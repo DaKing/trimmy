@@ -58,7 +58,7 @@ Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo menubar click --verify --index
 
 Optional: capture the popover via OCR for debugging:
 ```bash
-Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo see --menubar --json-output --output /private/tmp/trimmy-menubar.png \
+Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo see --menubar --json --path /private/tmp/trimmy-menubar.png \
   > /private/tmp/trimmy-menubar.json
 ```
 
@@ -76,7 +76,7 @@ Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo image --window-id <settings-wi
 7) Grab checkbox IDs (snapshot + jq)
 ```bash
 Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo see --app Trimmy --window-title "General" --annotate \
-  --json-output --output /private/tmp/trimmy-settings-annotated.png \
+  --json --path /private/tmp/trimmy-settings-annotated.png \
   > /private/tmp/trimmy-settings.json
 jq -r '.data.ui_elements[] | select(.role=="checkbox") | "\(.id)\t\(.description)"' /private/tmp/trimmy-settings.json
 jq -r '.data.snapshot_id' /private/tmp/trimmy-settings.json
@@ -137,17 +137,19 @@ code /Users/steipete/Projects/Trimmy/docs/manual-testing-peekaboo.md
 Update the “Latest run” block with date, machine, and outcome.
 
 ## Latest run
-- Date: 2025-12-28 15:10 local
+- Date: 2025-12-28 16:01 local
 - Machine: macOS 26.x (arm64)
-- Menu bar click: `menubar click --verify "Trimmy"` succeeded; `see --menubar` still captured Screenshot popover.
+- Menu bar click: `menubar click --verify "Trimmy"` succeeded; `see --menubar --app Trimmy` returned empty OCR (no popover detected).
 - Settings open: `peekaboo menu click --app Trimmy --item "Settings…"` succeeded.
-- Screenshots: `/Users/steipete/Desktop/Screenshots/peekaboo_see_1766934653.png` (Settings), `/Users/steipete/Desktop/Screenshots/peekaboo_see_1766933921.png` (menubar OCR).
-- See: `peekaboo see --app Trimmy --window-title "General"` succeeded via window-id capture (remote).
-- Clipboard E2E: clipboard set/get OK; Auto-trim toggle did not change output (still multiline). Needs follow-up.
-- Clipboard restored: slot `trimmy-e2e`.
+- Screenshots: `/tmp/trimmy-menubar.png` (menubar OCR, empty), `/tmp/trimmy-aggressiveness.png`, `/tmp/trimmy-general.png`.
+- See (Aggressiveness): `peekaboo see --app Trimmy --window-title "Aggressiveness"` succeeded; snapshot `6A621DCC-95EF-4E6C-BB0D-09D16F490FDB`.
+- Aggressiveness toggles: clicked `Low` → `Normal` → `High` via `elem_4` / `elem_5` / `elem_6` (snapshot `6A621DCC-95EF-4E6C-BB0D-09D16F490FDB`).
+- Switched to General tab: clicked `elem_17`, window title updated to `General`.
+- See (General): `peekaboo see --app Trimmy --window-title "General"` succeeded; snapshot `2E5A7CDD-B883-4EF9-8BA0-3BDB501C019E`.
+- Clipboard E2E: clipboard set/get OK; Auto-trim still did not change output after 1s (multiline).
 
 ## Previous run
-- Date: 2025-12-28 12:25 GMT
+- Date: 2025-12-28 15:34 local
 - Machine: macOS 26.2 (arm64)
 - Menu bar click: `menubar click --verify "Trimmy"` + `--index 6` failed (popover not detected); fallback AppleScript open worked.
 - Settings open: `osascript` menu item succeeded.
@@ -184,7 +186,7 @@ Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo menu click --app Trimmy --item
 4) `peekaboo see` can’t find settings elements
 ```bash
 Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo list windows --app Trimmy
-Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo see --window-id <settings-window-id> --json-output > /private/tmp/trimmy-settings.json
+Apps/CLI/.build/arm64-apple-macosx/debug/peekaboo see --window-id <settings-window-id> --json > /private/tmp/trimmy-settings.json
 jq -r '.data.ui_elements[] | select(.role=="checkbox") | "\(.id)\t\(.description)"' /private/tmp/trimmy-settings.json
 ```
 
