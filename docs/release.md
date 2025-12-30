@@ -76,7 +76,8 @@ git tag v0.2.2
 ## Checklist (quick)
 - [ ] Read both this file and `~/Projects/agent-scripts/docs/RELEASING-MAC.md`; resolve any conflicts toward Trimmy’s specifics.
 - [ ] Update versions (Package scripts, About text, CHANGELOG) — `Scripts/release.sh` now pulls release notes from the top changelog section automatically, so finalize it first.
-- [ ] `swiftformat`, `swiftlint`, `swift test` (ensure zero warnings/errors)
+- [ ] `swiftformat .`, `swiftlint lint`, `swift test` (ensure zero warnings/errors)
+- [ ] Confirm CI is green for the release commit (`gh run list/view`; rerun/fix until green).
 - [ ] `./Scripts/build_icon.sh` if icon changed
 - [ ] `./Scripts/sign-and-notarize.sh`
 - [ ] Generate Sparkle appcast with private key
