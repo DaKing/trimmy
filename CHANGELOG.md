@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.7.1 — Unreleased
+- _TBD._
+
 ## 0.7.0 — 2025-12-30
 - **Highlight:** Context-aware trimming with terminal detection, plus per-terminal aggressiveness (Cmd-C tracking + frontmost-app fallback).
 - Terminal detection now covers Ghostty, WezTerm, Alacritty, Hyper, and Warp Stable bundle IDs for context-aware trimming.
