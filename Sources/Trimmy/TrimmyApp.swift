@@ -1,6 +1,7 @@
 import AppKit
 import MenuBarExtraAccess
 import Observation
+import QuartzCore
 import Security
 import SwiftUI
 
@@ -60,6 +61,9 @@ struct TrimmyApp: App {
         .onChange(of: self.settings.autoTrimEnabled) { _, _ in
             self.applyStatusItemAppearance()
         }
+        .onChange(of: self.monitor.trimPulseID) { _, _ in
+            self.pulseStatusItem()
+        }
         .defaultSize(width: SettingsTab.windowWidth, height: SettingsTab.windowHeight)
         .windowResizability(.contentSize)
         .windowStyle(.titleBar)
@@ -70,6 +74,33 @@ extension TrimmyApp {
     private func applyStatusItemAppearance() {
         self.statusItem?.button?.appearsDisabled = !self.settings.autoTrimEnabled
     }
+
+    private func pulseStatusItem() {
+        guard let button = self.statusItem?.button else { return }
+        button.wantsLayer = true
+        if let layer = button.layer {
+            let baseOpacity = layer.opacity
+            let targetOpacity = max(0.25, baseOpacity * 0.4)
+            let animation = CABasicAnimation(keyPath: "opacity")
+            animation.fromValue = baseOpacity
+            animation.toValue = targetOpacity
+            animation.duration = 0.18
+            animation.autoreverses = true
+            animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+            layer.removeAnimation(forKey: "trimPulse")
+            layer.add(animation, forKey: "trimPulse")
+            return
+        }
+
+        let originalAlpha = button.alphaValue
+        let pulsedAlpha = max(0.25, originalAlpha * 0.4)
+        button.alphaValue = pulsedAlpha
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(180))
+            guard let button = self.statusItem?.button else { return }
+            button.alphaValue = originalAlpha
+        }
+    }
 }
 
 // MARK: - Status item label
@@ -79,11 +110,14 @@ private struct ScissorStatusLabel: View {
     var isEnabled: Bool
 
     var body: some View {
-        Label("Trimmy", systemImage: "scissors")
-            .symbolRenderingMode(.hierarchical)
-            .symbolEffect(.pulse, options: .repeat(1).speed(1.15), value: self.monitor.trimPulseID)
-            .foregroundStyle(self.isEnabled ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
-            .opacity(self.isEnabled ? 1.0 : 0.45)
+        Label {
+            Text("Trimmy")
+        } icon: {
+            Image(systemName: "scissors")
+                .symbolRenderingMode(.hierarchical)
+        }
+        .foregroundStyle(self.isEnabled ? AnyShapeStyle(.primary) : AnyShapeStyle(.secondary))
+        .opacity(self.isEnabled ? 1.0 : 0.45)
     }
 }
 
